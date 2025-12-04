@@ -1232,142 +1232,78 @@ _0x3:
 	LDI  R26,LOW(100)
 	LDI  R27,0
 	CALL _delay_ms
-; 0000 002C         if (MODE == 1){
-	CPI  R17,1
-	BRNE _0x6
-; 0000 002D             if(n<=7 && n>=0){
-	CPI  R16,8
-	BRSH _0x8
-	CPI  R16,0
-	BRSH _0x9
-_0x8:
-	RJMP _0x7
-_0x9:
-; 0000 002E                 n+=change;
-	ADD  R16,R19
-; 0000 002F             }
-; 0000 0030             if(n==7)        change = -1;
-_0x7:
-	CPI  R16,7
-	BRNE _0xA
-	LDI  R19,LOW(255)
-; 0000 0031             else if (n==0)  change =  1;
-	RJMP _0xB
-_0xA:
-	CPI  R16,0
-	BRNE _0xC
-	LDI  R19,LOW(1)
-; 0000 0032             show_screen(0b11111111, 1<<n);
-_0xC:
-_0xB:
-	LDI  R30,LOW(255)
-	ST   -Y,R30
-	MOV  R30,R16
-	LDI  R26,LOW(1)
-	CALL __LSLB12
-	MOV  R26,R30
-	RCALL _show_screen
-; 0000 0033         }
-; 0000 0034     }
-_0x6:
+; 0000 002C         PORTD = ~PORTD;
+	IN   R30,0x12
+	COM  R30
+	OUT  0x12,R30
+; 0000 002D 
+; 0000 002E //        if (MODE == 1){
+; 0000 002F //            if(n<=7 && n>=0){
+; 0000 0030 //                n+=change;
+; 0000 0031 //            }
+; 0000 0032 //            if(n==7)        change = -1;
+; 0000 0033 //            else if (n==0)  change =  1;
+; 0000 0034 //            show_screen(0b11111111, 1<<n);
+; 0000 0035 //        }
+; 0000 0036     }
 	RJMP _0x3
-; 0000 0035 }
-_0xD:
-	RJMP _0xD
+; 0000 0037 }
+_0x6:
+	RJMP _0x6
 ; .FEND
 ;
 ;unsigned char reverse(unsigned char b)
-; 0000 0038 {
-_reverse:
-; .FSTART _reverse
-; 0000 0039     unsigned char r = 0;
-; 0000 003A     unsigned char i = 0;
-; 0000 003B 
-; 0000 003C     for (i = 0; i < 8; i++) {
-	ST   -Y,R26
-	ST   -Y,R17
-	ST   -Y,R16
+; 0000 003A {
+; 0000 003B     unsigned char r = 0;
+; 0000 003C     unsigned char i = 0;
+; 0000 003D 
+; 0000 003E     for (i = 0; i < 8; i++) {
 ;	b -> Y+2
 ;	r -> R17
 ;	i -> R16
-	LDI  R17,0
-	LDI  R16,0
-	LDI  R16,LOW(0)
-_0xF:
-	CPI  R16,8
-	BRSH _0x10
-; 0000 003D         r <<= 1;
-	LSL  R17
-; 0000 003E         r |= (b & 1);
-	LDD  R30,Y+2
-	ANDI R30,LOW(0x1)
-	OR   R17,R30
-; 0000 003F         b >>= 1;
-	LDD  R30,Y+2
-	LSR  R30
-	STD  Y+2,R30
-; 0000 0040     }
-	SUBI R16,-1
-	RJMP _0xF
-_0x10:
-; 0000 0041     return r;
-	MOV  R30,R17
-	LDD  R17,Y+1
-	LDD  R16,Y+0
-	ADIW R28,3
-	RET
-; 0000 0042 }
-; .FEND
+; 0000 003F         r <<= 1;
+; 0000 0040         r |= (b & 1);
+; 0000 0041         b >>= 1;
+; 0000 0042     }
+; 0000 0043     return r;
+; 0000 0044 }
 ;
 ;void SETUP_DTOAMATRIX(void){
-; 0000 0044 void SETUP_DTOAMATRIX(void){
+; 0000 0046 void SETUP_DTOAMATRIX(void){
 _SETUP_DTOAMATRIX:
 ; .FSTART _SETUP_DTOAMATRIX
-; 0000 0045     DDRB = 0xFF;
+; 0000 0047     DDRB = 0xFF;
 	LDI  R30,LOW(255)
 	OUT  0x17,R30
-; 0000 0046     DDRD = 0xFF;
+; 0000 0048     DDRD = 0xFF;
 	OUT  0x11,R30
-; 0000 0047     clean_screen();
+; 0000 0049     clean_screen();
 	RCALL _clean_screen
-; 0000 0048 }
+; 0000 004A }
 	RET
 ; .FEND
 ;
 ;void clean_screen(void){
-; 0000 004A void clean_screen(void){
+; 0000 004C void clean_screen(void){
 _clean_screen:
 ; .FSTART _clean_screen
-; 0000 004B     PORTB = 0xFF;
+; 0000 004D     PORTB = 0xFF;
 	LDI  R30,LOW(255)
 	OUT  0x18,R30
-; 0000 004C     PORTD = 0;
+; 0000 004E     PORTD = 0;
 	LDI  R30,LOW(0)
 	OUT  0x12,R30
-; 0000 004D }
+; 0000 004F }
 	RET
 ; .FEND
 ;
 ;void show_screen(unsigned char ROWS, unsigned char COLUMNS){
-; 0000 004F void show_screen(unsigned char ROWS, unsigned char COLUMNS){
-_show_screen:
-; .FSTART _show_screen
-; 0000 0050     PORTB = ~reverse(ROWS);
-	ST   -Y,R26
+; 0000 0051 void show_screen(unsigned char ROWS, unsigned char COLUMNS){
+; 0000 0052     PORTB = ~reverse(ROWS);
 ;	ROWS -> Y+1
 ;	COLUMNS -> Y+0
-	LDD  R26,Y+1
-	RCALL _reverse
-	COM  R30
-	OUT  0x18,R30
-; 0000 0051     PORTD = reverse(COLUMNS);
-	LD   R26,Y
-	RCALL _reverse
-	OUT  0x12,R30
-; 0000 0052 }
-	ADIW R28,2
-	RET
-; .FEND
+; 0000 0053     PORTD = reverse(COLUMNS);
+; 0000 0054 }
 
 	.CSEG
 
@@ -1382,18 +1318,6 @@ __delay_ms0:
 	brne __delay_ms0
 __delay_ms1:
 	ret
-
-__LSLB12:
-	TST  R30
-	MOV  R0,R30
-	MOV  R30,R26
-	BREQ __LSLB12R
-__LSLB12L:
-	LSL  R30
-	DEC  R0
-	BRNE __LSLB12L
-__LSLB12R:
-	RET
 
 ;END OF CODE MARKER
 __END_OF_CODE:

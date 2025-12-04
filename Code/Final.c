@@ -41,14 +41,16 @@ void main(void){
 //    show_screen(0b10000001, 0b10000000);
     while (1){
         delay_ms(100);
-        if (MODE == 1){
-            if(n<=7 && n>=0){
-                n+=change;
-            }
-            if(n==7)        change = -1;
-            else if (n==0)  change =  1;
-            show_screen(0b11111111, 1<<n);
-        }
+        PORTD = ~PORTD;
+        
+//        if (MODE == 1){
+//            if(n<=7 && n>=0){
+//                n+=change;
+//            }
+//            if(n==7)        change = -1;
+//            else if (n==0)  change =  1;
+//            show_screen(0b11111111, 1<<n);
+//        }
     }    
 }
 
