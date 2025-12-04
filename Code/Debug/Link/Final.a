@@ -1,0 +1,182 @@
+;#include <delay.h>
+;#include <io.h>
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x40
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0xB0
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_powerdown=0x20
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powersave=0x30
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_standby=0xA0
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_ext_standby=0xB0
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_adc_noise_red=0x10
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=mcucr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;
+;//using a dotmatrix[Common Cathode]:
+;//  A DotMatrix(8x8) is a matrix of LEDs in 8 columns and 8 rows.
+;//  It has Two sets of pins:
+;//    set 1 -> A-H : pins of A to H are for rows
+;//    set 2 -> 1-8 : pins of 1 to 8 are for columns
+;//  when you try to light an specific LED, first you need to declear its COLUMN status.
+;//  so, you HIGH(3V-5V-VCC) the column number you want and LOW(0-GND) the other ones to
+;//  not set the other ones ON on a single row.
+;//  then, you LOW(0-GND) the row you desire and HIGH(3V-5V-VCC) the otherones so in a column,
+;//  so there is no other rows on.
+;//
+;//  here is the plan: we have a display_clean function, which sets the columns to LOW and rows
+;//  to HIGHT
+;//  DDRB = DDRD = 0xFF
+;//  ROWS[LOW] : PORTB = 0x00
+;//  COLUMN[HIGH] : PORTD = 0xFF
+;//
+;//  example :
+;//  row 3 column 1 and 2:
+;//  COLUMNS : 0b11000000
+;//  ROWS    : 0b11011111
+;
+;void SETUP_DTOAMATRIX(void);
+;void clean_screen(void);
+;void show_screen(unsigned char ROWS, unsigned char COLUMNS);
+;unsigned char reverse(unsigned char b);
+;
+;void main(void){
+; 0000 001F void main(void){
+
+	.CSEG
+;PCODE: $0000000D VOL: 0
+; 0000 0020 //    columns : PORTD
+; 0000 0021 //    ROWS    : PORTB
+; 0000 0022     SETUP_DTOAMATRIX();
+;PCODE: $0000000E VOL: 0
+; 0000 0023     show_screen(0b10000001, 0b10000000);
+;PCODE: $0000000F VOL: 0
+;PCODE: $00000010 VOL: 0
+;PCODE: $00000011 VOL: 0
+;PCODE: $00000012 VOL: 0
+; 0000 0024 //    clean_screen();
+; 0000 0025 //    PORTB = 0b11011111;
+; 0000 0026 //    PORTD = 0b11000000;
+; 0000 0027 
+; 0000 0028 }
+;PCODE: $00000013 VOL: 0
+;PCODE: $00000014 VOL: 0
+;PCODE: $00000015 VOL: 0
+;
+;unsigned char reverse(unsigned char b)
+; 0000 002B {
+;PCODE: $00000016 VOL: 0
+;PCODE: $00000017 VOL: 0
+; 0000 002C     unsigned char r = 0;
+; 0000 002D     unsigned char i = 0;
+; 0000 002E 
+; 0000 002F     for (i = 0; i < 8; i++) {
+;PCODE: $00000018 VOL: 0
+;PCODE: $00000019 VOL: 0
+;PCODE: $0000001A VOL: 0
+;	b -> Y+2
+;	r -> R17
+;	i -> R16
+;PCODE: $0000001B VOL: 0
+;PCODE: $0000001C VOL: 0
+;PCODE: $0000001D VOL: 0
+;PCODE: $0000001E VOL: 0
+;PCODE: $0000001F VOL: 0
+;PCODE: $00000020 VOL: 0
+;PCODE: $00000021 VOL: 0
+;PCODE: $00000022 VOL: 0
+;PCODE: $00000023 VOL: 0
+;PCODE: $00000024 VOL: 0
+;PCODE: $00000025 VOL: 0
+;PCODE: $00000026 VOL: 0
+;PCODE: $00000027 VOL: 0
+; 0000 0030         r <<= 1;
+;PCODE: $00000028 VOL: 0
+; 0000 0031         r |= (b & 1);
+;PCODE: $00000029 VOL: 0
+;PCODE: $0000002A VOL: 0
+;PCODE: $0000002B VOL: 0
+;PCODE: $0000002C VOL: 0
+; 0000 0032         b >>= 1;
+;PCODE: $0000002D VOL: 0
+;PCODE: $0000002E VOL: 0
+;PCODE: $0000002F VOL: 0
+; 0000 0033     }
+;PCODE: $00000030 VOL: 0
+;PCODE: $00000031 VOL: 0
+;PCODE: $00000032 VOL: 0
+;PCODE: $00000033 VOL: 0
+;PCODE: $00000034 VOL: 0
+; 0000 0034     return r;
+;PCODE: $00000035 VOL: 0
+;PCODE: $00000036 VOL: 0
+;PCODE: $00000037 VOL: 0
+;PCODE: $00000038 VOL: 0
+;PCODE: $00000039 VOL: 0
+;PCODE: $0000003A VOL: 0
+;PCODE: $0000003B VOL: 0
+; 0000 0035 }
+;PCODE: $0000003C VOL: 0
+;
+;void SETUP_DTOAMATRIX(void){
+; 0000 0037 void SETUP_DTOAMATRIX(void){
+;PCODE: $0000003D VOL: 0
+;PCODE: $0000003E VOL: 0
+; 0000 0038     DDRB = 0xFF;
+;PCODE: $0000003F VOL: 0
+;PCODE: $00000040 VOL: 0
+; 0000 0039     DDRD = 0xFF;
+;PCODE: $00000041 VOL: 0
+;PCODE: $00000042 VOL: 0
+; 0000 003A     clean_screen();
+;PCODE: $00000043 VOL: 0
+; 0000 003B }
+;PCODE: $00000044 VOL: 0
+;PCODE: $00000045 VOL: 0
+;
+;void clean_screen(void){
+; 0000 003D void clean_screen(void){
+;PCODE: $00000046 VOL: 0
+;PCODE: $00000047 VOL: 0
+; 0000 003E     PORTB = 0x00;
+;PCODE: $00000048 VOL: 0
+;PCODE: $00000049 VOL: 0
+; 0000 003F     PORTD = 0xFF;
+;PCODE: $0000004A VOL: 0
+;PCODE: $0000004B VOL: 0
+; 0000 0040 }
+;PCODE: $0000004C VOL: 0
+;PCODE: $0000004D VOL: 0
+;
+;void show_screen(unsigned char ROWS, unsigned char COLUMNS){
+; 0000 0042 void show_screen(unsigned char ROWS, unsigned char COLUMNS){
+;PCODE: $0000004E VOL: 0
+;PCODE: $0000004F VOL: 0
+; 0000 0043     PORTB = ~reverse(ROWS);
+;PCODE: $00000050 VOL: 0
+;	ROWS -> Y+1
+;	COLUMNS -> Y+0
+;PCODE: $00000051 VOL: 0
+;PCODE: $00000052 VOL: 0
+;PCODE: $00000053 VOL: 0
+;PCODE: $00000054 VOL: 0
+; 0000 0044     PORTD = reverse(COLUMNS);
+;PCODE: $00000055 VOL: 0
+;PCODE: $00000056 VOL: 0
+;PCODE: $00000057 VOL: 0
+; 0000 0045 }
+;PCODE: $00000058 VOL: 0
+;PCODE: $00000059 VOL: 0
+;PCODE: $0000005A VOL: 0
