@@ -31,12 +31,25 @@ unsigned char reverse(unsigned char b);
 void main(void){
 //    columns : PORTD
 //    ROWS    : PORTB
-    SETUP_DTOAMATRIX();
-    show_screen(0b10000001, 0b10000000);
-//    clean_screen();    
-//    PORTB = 0b11011111;
-//    PORTD = 0b11000000;
+    unsigned char MODE,n;
+    char change;
+    SETUP_DTOAMATRIX();  
     
+    n = 0;
+    MODE = 1;
+    change = 1;
+//    show_screen(0b10000001, 0b10000000);
+    while (1){
+        delay_ms(100);
+        if (MODE == 1){
+            if(n<=7 && n>=0){
+                n+=change;
+            }
+            if(n==7)        change = -1;
+            else if (n==0)  change =  1;
+            show_screen(0b11111111, 1<<n);
+        }
+    }    
 }
 
 unsigned char reverse(unsigned char b)
@@ -59,8 +72,8 @@ void SETUP_DTOAMATRIX(void){
 }
 
 void clean_screen(void){
-    PORTB = 0x00;
-    PORTD = 0xFF;
+    PORTB = 0xFF;
+    PORTD = 0;
 }
 
 void show_screen(unsigned char ROWS, unsigned char COLUMNS){

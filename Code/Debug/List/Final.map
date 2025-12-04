@@ -13,8 +13,8 @@ Variable                                                                        
 FLASH Allocation [words]
 Function                                                                          Address   Size
 ------------------------------------------------------------------------------------------------
-main                                                                              0x00045      6
-reverse                                                                           0x0004B     22
-SETUP_DTOAMATRIX                                                                  0x00061      5
-clean_screen                                                                      0x00066      5
-show_screen                                                                       0x0006B     10
+main                                                                              0x00045     33
+reverse                                                                           0x00066     22
+SETUP_DTOAMATRIX                                                                  0x0007C      5
+clean_screen                                                                      0x00081      5
+show_screen                                                                       0x00086     10

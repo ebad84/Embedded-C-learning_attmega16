@@ -59,37 +59,35 @@
 ;PCODE: $0000000D VOL: 0
 ; 0000 0020 //    columns : PORTD
 ; 0000 0021 //    ROWS    : PORTB
-; 0000 0022     SETUP_DTOAMATRIX();
+; 0000 0022     unsigned char MODE,n;
+; 0000 0023     char change;
+; 0000 0024     SETUP_DTOAMATRIX();
+;	MODE -> R17
+;	n -> R16
+;	change -> R19
 ;PCODE: $0000000E VOL: 0
-; 0000 0023     show_screen(0b10000001, 0b10000000);
+; 0000 0025 
+; 0000 0026     n = 0;
 ;PCODE: $0000000F VOL: 0
 ;PCODE: $00000010 VOL: 0
+; 0000 0027     MODE = 1;
 ;PCODE: $00000011 VOL: 0
 ;PCODE: $00000012 VOL: 0
-; 0000 0024 //    clean_screen();
-; 0000 0025 //    PORTB = 0b11011111;
-; 0000 0026 //    PORTD = 0b11000000;
-; 0000 0027 
-; 0000 0028 }
+; 0000 0028     change = 1;
 ;PCODE: $00000013 VOL: 0
 ;PCODE: $00000014 VOL: 0
+; 0000 0029 //    show_screen(0b10000001, 0b10000000);
+; 0000 002A     while (1){
 ;PCODE: $00000015 VOL: 0
-;
-;unsigned char reverse(unsigned char b)
-; 0000 002B {
+; 0000 002B         delay_ms(100);
 ;PCODE: $00000016 VOL: 0
 ;PCODE: $00000017 VOL: 0
-; 0000 002C     unsigned char r = 0;
-; 0000 002D     unsigned char i = 0;
-; 0000 002E 
-; 0000 002F     for (i = 0; i < 8; i++) {
 ;PCODE: $00000018 VOL: 0
+; 0000 002C         if (MODE == 1){
 ;PCODE: $00000019 VOL: 0
 ;PCODE: $0000001A VOL: 0
-;	b -> Y+2
-;	r -> R17
-;	i -> R16
 ;PCODE: $0000001B VOL: 0
+; 0000 002D             if(n<=7 && n>=0){
 ;PCODE: $0000001C VOL: 0
 ;PCODE: $0000001D VOL: 0
 ;PCODE: $0000001E VOL: 0
@@ -99,27 +97,27 @@
 ;PCODE: $00000022 VOL: 0
 ;PCODE: $00000023 VOL: 0
 ;PCODE: $00000024 VOL: 0
+; 0000 002E                 n+=change;
 ;PCODE: $00000025 VOL: 0
 ;PCODE: $00000026 VOL: 0
+; 0000 002F             }
+; 0000 0030             if(n==7)        change = -1;
 ;PCODE: $00000027 VOL: 0
-; 0000 0030         r <<= 1;
 ;PCODE: $00000028 VOL: 0
-; 0000 0031         r |= (b & 1);
 ;PCODE: $00000029 VOL: 0
 ;PCODE: $0000002A VOL: 0
 ;PCODE: $0000002B VOL: 0
 ;PCODE: $0000002C VOL: 0
-; 0000 0032         b >>= 1;
+; 0000 0031             else if (n==0)  change =  1;
 ;PCODE: $0000002D VOL: 0
 ;PCODE: $0000002E VOL: 0
 ;PCODE: $0000002F VOL: 0
-; 0000 0033     }
 ;PCODE: $00000030 VOL: 0
 ;PCODE: $00000031 VOL: 0
 ;PCODE: $00000032 VOL: 0
+; 0000 0032             show_screen(0b11111111, 1<<n);
 ;PCODE: $00000033 VOL: 0
 ;PCODE: $00000034 VOL: 0
-; 0000 0034     return r;
 ;PCODE: $00000035 VOL: 0
 ;PCODE: $00000036 VOL: 0
 ;PCODE: $00000037 VOL: 0
@@ -127,56 +125,118 @@
 ;PCODE: $00000039 VOL: 0
 ;PCODE: $0000003A VOL: 0
 ;PCODE: $0000003B VOL: 0
-; 0000 0035 }
+; 0000 0033         }
+; 0000 0034     }
 ;PCODE: $0000003C VOL: 0
-;
-;void SETUP_DTOAMATRIX(void){
-; 0000 0037 void SETUP_DTOAMATRIX(void){
 ;PCODE: $0000003D VOL: 0
 ;PCODE: $0000003E VOL: 0
-; 0000 0038     DDRB = 0xFF;
+; 0000 0035 }
 ;PCODE: $0000003F VOL: 0
 ;PCODE: $00000040 VOL: 0
-; 0000 0039     DDRD = 0xFF;
 ;PCODE: $00000041 VOL: 0
+;
+;unsigned char reverse(unsigned char b)
+; 0000 0038 {
 ;PCODE: $00000042 VOL: 0
-; 0000 003A     clean_screen();
 ;PCODE: $00000043 VOL: 0
-; 0000 003B }
+; 0000 0039     unsigned char r = 0;
+; 0000 003A     unsigned char i = 0;
+; 0000 003B 
+; 0000 003C     for (i = 0; i < 8; i++) {
 ;PCODE: $00000044 VOL: 0
 ;PCODE: $00000045 VOL: 0
-;
-;void clean_screen(void){
-; 0000 003D void clean_screen(void){
 ;PCODE: $00000046 VOL: 0
+;	b -> Y+2
+;	r -> R17
+;	i -> R16
 ;PCODE: $00000047 VOL: 0
-; 0000 003E     PORTB = 0x00;
 ;PCODE: $00000048 VOL: 0
 ;PCODE: $00000049 VOL: 0
-; 0000 003F     PORTD = 0xFF;
 ;PCODE: $0000004A VOL: 0
 ;PCODE: $0000004B VOL: 0
-; 0000 0040 }
 ;PCODE: $0000004C VOL: 0
 ;PCODE: $0000004D VOL: 0
-;
-;void show_screen(unsigned char ROWS, unsigned char COLUMNS){
-; 0000 0042 void show_screen(unsigned char ROWS, unsigned char COLUMNS){
 ;PCODE: $0000004E VOL: 0
 ;PCODE: $0000004F VOL: 0
-; 0000 0043     PORTB = ~reverse(ROWS);
 ;PCODE: $00000050 VOL: 0
-;	ROWS -> Y+1
-;	COLUMNS -> Y+0
 ;PCODE: $00000051 VOL: 0
 ;PCODE: $00000052 VOL: 0
 ;PCODE: $00000053 VOL: 0
+; 0000 003D         r <<= 1;
 ;PCODE: $00000054 VOL: 0
-; 0000 0044     PORTD = reverse(COLUMNS);
+; 0000 003E         r |= (b & 1);
 ;PCODE: $00000055 VOL: 0
 ;PCODE: $00000056 VOL: 0
 ;PCODE: $00000057 VOL: 0
-; 0000 0045 }
 ;PCODE: $00000058 VOL: 0
+; 0000 003F         b >>= 1;
 ;PCODE: $00000059 VOL: 0
 ;PCODE: $0000005A VOL: 0
+;PCODE: $0000005B VOL: 0
+; 0000 0040     }
+;PCODE: $0000005C VOL: 0
+;PCODE: $0000005D VOL: 0
+;PCODE: $0000005E VOL: 0
+;PCODE: $0000005F VOL: 0
+;PCODE: $00000060 VOL: 0
+; 0000 0041     return r;
+;PCODE: $00000061 VOL: 0
+;PCODE: $00000062 VOL: 0
+;PCODE: $00000063 VOL: 0
+;PCODE: $00000064 VOL: 0
+;PCODE: $00000065 VOL: 0
+;PCODE: $00000066 VOL: 0
+;PCODE: $00000067 VOL: 0
+; 0000 0042 }
+;PCODE: $00000068 VOL: 0
+;
+;void SETUP_DTOAMATRIX(void){
+; 0000 0044 void SETUP_DTOAMATRIX(void){
+;PCODE: $00000069 VOL: 0
+;PCODE: $0000006A VOL: 0
+; 0000 0045     DDRB = 0xFF;
+;PCODE: $0000006B VOL: 0
+;PCODE: $0000006C VOL: 0
+; 0000 0046     DDRD = 0xFF;
+;PCODE: $0000006D VOL: 0
+;PCODE: $0000006E VOL: 0
+; 0000 0047     clean_screen();
+;PCODE: $0000006F VOL: 0
+; 0000 0048 }
+;PCODE: $00000070 VOL: 0
+;PCODE: $00000071 VOL: 0
+;
+;void clean_screen(void){
+; 0000 004A void clean_screen(void){
+;PCODE: $00000072 VOL: 0
+;PCODE: $00000073 VOL: 0
+; 0000 004B     PORTB = 0xFF;
+;PCODE: $00000074 VOL: 0
+;PCODE: $00000075 VOL: 0
+; 0000 004C     PORTD = 0;
+;PCODE: $00000076 VOL: 0
+;PCODE: $00000077 VOL: 0
+; 0000 004D }
+;PCODE: $00000078 VOL: 0
+;PCODE: $00000079 VOL: 0
+;
+;void show_screen(unsigned char ROWS, unsigned char COLUMNS){
+; 0000 004F void show_screen(unsigned char ROWS, unsigned char COLUMNS){
+;PCODE: $0000007A VOL: 0
+;PCODE: $0000007B VOL: 0
+; 0000 0050     PORTB = ~reverse(ROWS);
+;PCODE: $0000007C VOL: 0
+;	ROWS -> Y+1
+;	COLUMNS -> Y+0
+;PCODE: $0000007D VOL: 0
+;PCODE: $0000007E VOL: 0
+;PCODE: $0000007F VOL: 0
+;PCODE: $00000080 VOL: 0
+; 0000 0051     PORTD = reverse(COLUMNS);
+;PCODE: $00000081 VOL: 0
+;PCODE: $00000082 VOL: 0
+;PCODE: $00000083 VOL: 0
+; 0000 0052 }
+;PCODE: $00000084 VOL: 0
+;PCODE: $00000085 VOL: 0
+;PCODE: $00000086 VOL: 0
